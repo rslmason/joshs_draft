@@ -1,0 +1,15 @@
+<%= form_with do |form| %>
+  <%= form.label :title %>
+  <%= form.text_field :title %>
+  <%= form.label :description %>
+  <%= form.text_field :description %>
+  <%= form.label :total_players %>
+  <%= form.select :total_players, 1..8 %>
+  <%= form.label :players %>
+  <%= form.select :users, @users.map {|u| [u.name, u.id]}, {:include_hidden => false}, {:multiple => true, :size => @users.count} %>
+  <%= form.label :selections_per_player %>
+  <%= form.number_field :num_selections, in: 1..10, step: 1 %>
+  <%= form.label :factions_drawn %>
+  <%= form.number_field :draw, in: 1..999, step: 1 %>
+  <%= form.submit %>
+<% end %>

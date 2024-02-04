@@ -1,0 +1,12 @@
+<h1> the site </h1>
+<%= @message%>
+<%= @makeavailable %>
+
+<% if @user_drafts %>
+  <% @user_drafts.each do |draft| %>
+    <p><%= draft.title %></p>
+    <p><%= draft.body %></p>
+  <% end %>
+<% end %>
+<a href="/drafts"> Drafts </a>
+<a href="/drafts/new"> New Draft </a>

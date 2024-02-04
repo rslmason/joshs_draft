@@ -1,0 +1,2 @@
+<p> I am the partial </p>
+<%= select_tag :faction, options_for_select(Selection.factions.map {|k,v| [k.humanize.titleize, v]})  %>

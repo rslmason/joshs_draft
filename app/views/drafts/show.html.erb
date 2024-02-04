@@ -1,0 +1,28 @@
+<H1><%= @draft.title %></H1>
+<H2><%= @draft.description %></H2>
+<H3>Players: <%= @draft.users.count %>/<%= @draft.total_players %></H3>
+<% @draft.users.each do |u| %>
+  <% if @user == u %>
+    <p><%= u.name %> (you)</p>
+  <% else %>
+    <p><%= u.name %></p>
+  <% end %>
+<% end %>
+<% 1..(@draft.total_players - @draft.users.length).times do %>
+ <p>[open]</p>
+<% end %>
+<% if @user && @draft.open? && !user_in_draft? %>
+  <%= form_with do |f| %>
+  <%= f.submit "join" %>
+  <% end %>
+<% end %>
+<% if user_in_draft? %>
+  <%= form_with url: "/drafts/#{@draft.id}/select" do |f| %>
+    <% @selections.each_with_index do |selection, index|%>
+      <%= f.fields_for :selections, selection, index: (selection.id || (-1 - index)) do |s| %>
+        <%= s.select :faction, options_for_select(Selection.factions.map {|k,v| [k.humanize.titleize, v]}, Selection.factions[s.object.faction]), include_blank: '- Select -'  %>
+      <% end%>
+    <% end %>
+    <%= f.submit "submit" %>
+  <% end %>
+<% end %>
