@@ -9,16 +9,7 @@ class DraftsController < ApplicationController
   def show
     @draft = Draft.find(params[:id])
     if @user
-      @selections = Selection.where(draft_id: @draft.id, user_id: @user.id)
-      Rails.logger.info "There are #{@selections.count} selections"
-      needed = @draft.num_selections - @selections.count
-      Rails.logger.info "We need #{needed} more selections"
-      if needed > 0
-        Rails.logger.info "creating #{needed} more selections"
-        @selections += needed.times.map { Selection.new(draft_id: @draft.id, user_id: @user.id) }
-        Rails.logger.info "There are now #{@selections.length} selections"
-      end 
-      Rails.logger.info "Selections is #{@selections}"
+      get_selections
     end
   end
 
@@ -28,6 +19,7 @@ class DraftsController < ApplicationController
     Rails.logger.info "selections: #{params[:selections]}"
     Rails.logger.info '----------'
     @draft = Draft.find(params[:id])
+    return unless @draft.users.include?(@user)
     params.permit! # revisit this
     selections = params[:selections]
     selections.each do |index_or_id, selection|
@@ -83,16 +75,16 @@ class DraftsController < ApplicationController
   end
 
   def join
-    # if !@user
     @draft = Draft.find(params[:id])
     @draft.users << @user unless @draft.users.include?(@user)
     if @draft.save
-      @selections = Selection.where(draft_id: @draft.id, user_id: @user.id)
-      render :show
+      redirect_to "/drafts/#{params[:id]}" and return
     else
       @errors = @draft.errors.full_messages
-      render :show
+      get_selections
+      render :show and return
     end
+    
   end
 
   def delete
@@ -125,5 +117,17 @@ class DraftsController < ApplicationController
     Rails.logger.info "params: #{params.inspect}"
   end
 
+  def get_selections
+    @selections = Selection.where(draft_id: @draft.id, user_id: @user.id)
+    Rails.logger.info "There are #{@selections.count} selections"
+    needed = @draft.num_selections - @selections.count
+    Rails.logger.info "We need #{needed} more selections"
+    if needed > 0
+      Rails.logger.info "creating #{needed} more selections"
+      @selections += needed.times.map { Selection.new(draft_id: @draft.id, user_id: @user.id) }
+      Rails.logger.info "There are now #{@selections.length} selections"
+    end 
+    Rails.logger.info "Selections is #{@selections}"
+  end
 
 end

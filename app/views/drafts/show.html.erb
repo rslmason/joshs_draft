@@ -16,7 +16,7 @@
   <%= f.submit "join" %>
   <% end %>
 <% end %>
-<% if user_in_draft? %>
+<% if user_in_draft? && @selections%>
   <%= form_with url: "/drafts/#{@draft.id}/select" do |f| %>
     <% @selections.each_with_index do |selection, index|%>
       <%= f.fields_for :selections, selection, index: (selection.id || (-1 - index)) do |s| %>
