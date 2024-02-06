@@ -2,23 +2,8 @@ class Draft < ActiveRecord::Base
   # Not the ideal way to do this, but it's a start
   after_touch :generate_results
   
-  
-  # after_save :say_hello
-  # after_save :generate_results, if: -> { selections.count == (total_players * num_selections) }
-  # after_save :say_i_am_saved
-
-  # def say_i_am_saved
-  #   Rails.logger.info "-----------------"
-  #   Rails.logger.info "I am saved"
-  #   Rails.logger.info "-----------------"
-  # end
-
-  # def say_hello
-  #   Rails.logger.info "Hello from the after_touch callback"
-  # end
-
   def generate_results
-    return if drawn
+    # return if drawn
     ActiveRecord::Base.transaction do
       if selections.count == (total_players * num_selections) 
         draft_selections = selections
@@ -41,48 +26,49 @@ class Draft < ActiveRecord::Base
           end
         end
       end
-      drawn = true
+      self.drawn = true
       save
     end
   end
 
-
-
-
   has_and_belongs_to_many :users, :join_table => :user_drafts
   has_many :selections, dependent: :destroy
-  # can't use scope this way?
-  # validates :selections, length: { maximum: -> (draft) { draft.num_selections }}
-  # validates :selections, length: { maximum: -> { num_selections }, scope: :user_id}
-  validate :selections_length
-  # working on this validation as a method
-  def selections_length
-    if selections.count > num_selections
-      errors.add(:selections, "Maximum number of selections reached")
-    end
-  end
+  
+  validates :title, presence: true
 
   has_many :results, dependent: :destroy
   validates :results, length: { maximum: -> (draft) { draft.draw } }
 
-
-  validates :total_players, presence: true,  length: { mininmum: 2, maximum: 8 }
+  validates :total_players, presence: true
+  validates_numericality_of :total_players, greater_than: 1, less_than_or_equal_to: 8
   validates :users , length: { maximum: :total_players, message: "Maximum number of players reached" }
-
   validates_numericality_of :num_selections, greater_than: 0, less_than_or_equal_to: 10
-  validates_numericality_of :draw, greater_than_or_equal_to: -> (draft) { draft.total_players }, less_than_or_equal_to: -> (draft) {draft.total_players * draft.num_selections} 
+  validates_numericality_of :draw, greater_than_or_equal_to: -> (draft) { draft.total_players },  message: "Draw must be greater than or equal to total players"
+  validates_numericality_of :draw, less_than_or_equal_to: -> (draft) { Selection.factions.count - 1}, message: "Total drawn must be less than the total number of factions (#{Selection.factions.count}).", if: :exceedsFactions?
+  validates_numericality_of :draw, less_than_or_equal_to: -> (draft) { draft.total_players * draft.num_selections }, message: "Total drawn must be less than or equal to total players time selections per player", unless: :exceedsFactions?
+  
+  def exceedsFactions?
+    total_players * num_selections > Selection.factions.count - 1
+  end
 
   def name
     "Draft #{id}"
   end
 
-  def self.class_method
-    "class method"
-  end
-
   def open? 
     users.count < total_players
   end
+
+  def user_selections(user)
+    numerator = selections.where(user: user)
+    denominator = num_selections
+    "#{numerator.count}/#{denominator}"
+  end
+
+  scope :open, -> { where("total_players > ?", users.count) }
+  scope :closed, -> { where("total_players <= ?", users.count) }
+  scope :drawn, -> { where(drawn: true) }
+  scope :undrawn, -> { where(drawn: false) }
 
   alias :players :users
 

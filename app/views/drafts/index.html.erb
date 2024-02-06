@@ -1,9 +1,16 @@
 <%= javascript_pack_tag 'draft' %>
-<h1> Heading </h1>
+<h1> Drafts </h1>
 <h2> Your Drafts </h2>
 <ul>
   <% @drafts.each do |draft| %>
-    <li><a href="/drafts/<%= draft.id %>"><%= draft.title %></a></li>
+    <li>
+      <a href="/drafts/<%= draft.id %>"><%= draft.title %></a>
+      <% if draft.drawn? %>
+        <%= "(drawn)" %>
+      <% else %>
+        <%= "(#{draft.user_selections(@user)})"%>
+      <% end %>
+    </li>
   <% end %>
   <% unless @drafts.length > 0%>
     <li>None</li>
@@ -18,4 +25,3 @@
     <li>None</li>
   <% end %>
 </ul>
-<%= @message %>

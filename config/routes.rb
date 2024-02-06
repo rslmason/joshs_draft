@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   root 'main#index'
+  get '/login', to: 'main#login'
+  
   get '/drafts', to: 'drafts#index'
   get '/drafts/new', to: 'drafts#new'
   post '/drafts/new', to: 'drafts#create'

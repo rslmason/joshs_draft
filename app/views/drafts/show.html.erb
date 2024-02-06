@@ -20,9 +20,17 @@
   <%= form_with url: "/drafts/#{@draft.id}/select" do |f| %>
     <% @selections.each_with_index do |selection, index|%>
       <%= f.fields_for :selections, selection, index: (selection.id || (-1 - index)) do |s| %>
-        <%= s.select :faction, options_for_select(Selection.factions.map {|k,v| [k.humanize.titleize, v]}, Selection.factions[s.object.faction]), include_blank: '- Select -'  %>
+        <%= s.select :faction, options_for_select(Selection.factions.map {|k,v| [k.humanize.titleize, v]}, Selection.factions[s.object.faction]), include_blank: true  %>
       <% end%>
     <% end %>
     <%= f.submit "submit" %>
   <% end %>
+<% end %>
+<% if @draft.drawn? %>
+  <h2>Results</h2>
+  <ol>
+    <% @draft.results.each do |result| %>
+      <li><%= result.selection.faction.humanize.titleize %></li>
+    <% end %>
+  </ol>
 <% end %>
