@@ -38,6 +38,9 @@
         <%= link_to "Home", "/" %>
         <%= link_to "Drafts", "/drafts" %>
         <%= link_to "New Draft", "/drafts/new" %>
+        <% if @user && @user.admin? %>
+          <%= link_to "Admin", "/admin" %>
+        <% end %>
       </nav>
     </header>
     
