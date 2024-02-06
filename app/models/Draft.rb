@@ -3,7 +3,7 @@ class Draft < ActiveRecord::Base
   after_touch :generate_results
   
   def generate_results
-    # return if drawn
+    return if drawn
     ActiveRecord::Base.transaction do
       if selections.count == (total_players * num_selections) 
         draft_selections = selections
@@ -25,9 +25,9 @@ class Draft < ActiveRecord::Base
             results << Result.new(draft: self, selection: house_selection)
           end
         end
+        self.drawn = true
+        save
       end
-      self.drawn = true
-      save
     end
   end
 
@@ -39,7 +39,7 @@ class Draft < ActiveRecord::Base
   has_many :results, dependent: :destroy
   validates :results, length: { maximum: -> (draft) { draft.draw } }
   validates :description, length: { maximum: 255 }
-  
+
   validates :total_players, presence: true
   validates_numericality_of :total_players, greater_than: 1, less_than_or_equal_to: 8
   validates :users , length: { maximum: :total_players, message: "Maximum number of players reached" }

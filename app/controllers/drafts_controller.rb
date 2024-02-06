@@ -14,11 +14,17 @@ class DraftsController < ApplicationController
   end
 
   def select 
+    @draft = Draft.find(params[:id])
+    if @draft.drawn? 
+      @errors = ["The draft has already been drawn"]
+      get_selections 
+      render :show and return
+    end
     # Rails.logger.info "params: #{params.inspect}"
     Rails.logger.info '----------'
     Rails.logger.info "selections: #{params[:selections]}"
     Rails.logger.info '----------'
-    @draft = Draft.find(params[:id])
+    
     return unless @draft.users.include?(@user)
     params.permit! # revisit this
     selections = params[:selections]
