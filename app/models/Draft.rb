@@ -18,7 +18,7 @@ class Draft < ActiveRecord::Base
         end
 
         if results.length < draw
-          house = User.find_or_create_by(name: "House", password: "password")
+          house = User.find_or_create_by(name: "<autoselect>", password: "password")
           available_factions = Selection.factions.keys - factions_among_selections
           available_factions.sample(draw - results.length).each do |faction|
             house_selection = Selection.create(draft: self, user: house, faction: faction)

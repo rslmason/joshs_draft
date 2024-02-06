@@ -13,4 +13,17 @@ class MainController < ApplicationController
       @drafts = Draft.joins(:user).where(users: {name: @user.name})
     end
   end
+
+  def admin
+    unless User.where(admin: true).exists?
+      @user.admin = true
+      @user.save
+    end
+    unless @user.admin
+      redirect_to "/"
+    end
+    @drafts = Draft.all
+    @users = User.all
+  end
+
 end

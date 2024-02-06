@@ -34,6 +34,12 @@ class UsersController < ApplicationController
     redirect_back(fallback_location: root_path)
   end
 
+  def delete
+    return unless @user.admin
+    @user = User.find(params[:id]).destroy
+    redirect_to :controller => 'main', :action => 'admin' and return
+  end
+
   private 
 
   def user_params

@@ -95,6 +95,11 @@ class DraftsController < ApplicationController
     end
   end
 
+  def delete
+    return unless @user.admin
+    @draft = Draft.find(params[:id]).destroy
+    redirect_to :controller => 'main', :action => 'admin' and return
+  end
 
   private
 
