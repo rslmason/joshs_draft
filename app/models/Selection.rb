@@ -8,21 +8,20 @@ class Selection < ActiveRecord::Base
     arborec 
     barony_of_letnev 
     clan_of_saar 
-    embers of muaat
+    embers_of_muaat
     emirates_of_hacan
     empyrean 
-    federation of sol
+    federation_of_sol
     ghosts_of_creuss 
     l1z1x_mindnet
-    mahact gene sorcerers
+    mahact_gene_sorcerers
     mentak_coalition
     naalu_collective
-    naaz-rhoka alliance
-    nekro virus
+    naaz-rhoka_alliance
+    nekro_virus
     nomad
     sardaak_n'orr
-    the wa
-    titans of ul
+    titans_of_ul
     universities_of_jol_nar
     vuil'raith_cabal
     winnu
