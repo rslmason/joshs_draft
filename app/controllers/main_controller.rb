@@ -15,6 +15,7 @@ class MainController < ApplicationController
   end
 
   def admin
+    redirect_to "/" and return unless @user
     unless User.where(admin: true).exists?
       @user.admin = true
       @user.save
