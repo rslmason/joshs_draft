@@ -62,7 +62,7 @@ class DraftsController < ApplicationController
 
   def new
     @draft = Draft.new
-    @users = User.where.not(name: "House")
+    @users = User.where.not(name: "<autoselect>")
     
   end
 
