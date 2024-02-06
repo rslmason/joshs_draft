@@ -34,11 +34,12 @@ class Draft < ActiveRecord::Base
   has_and_belongs_to_many :users, :join_table => :user_drafts
   has_many :selections, dependent: :destroy
   
-  validates :title, presence: true
+  validates :title, presence: true, length: { minimum: 3, maximum: 50}
 
   has_many :results, dependent: :destroy
   validates :results, length: { maximum: -> (draft) { draft.draw } }
-
+  validates :description, length: { maximum: 255 }
+  
   validates :total_players, presence: true
   validates_numericality_of :total_players, greater_than: 1, less_than_or_equal_to: 8
   validates :users , length: { maximum: :total_players, message: "Maximum number of players reached" }
