@@ -2,15 +2,16 @@ class Draft < ActiveRecord::Base
   # Not the ideal way to do this, but it's a start
   after_touch :generate_results
   
-  def generate_results
+  def generate_results(force: false)
     return if drawn
     ActiveRecord::Base.transaction do
       if selections.count == (total_players * num_selections) 
         draft_selections = selections
         factions_among_selections = []
+        i = 0
         while results.length < draw && draft_selections.length > 0
           drawn = draft_selections.sample
-          results << Result.new(draft: self, selection: drawn)
+          results << Result.create(draft: self, selection: drawn)
           factions_among_selections << drawn.faction
           draft_selections = draft_selections.reject { |selection|
             selection.faction == drawn.faction 
@@ -22,7 +23,7 @@ class Draft < ActiveRecord::Base
           available_factions = Selection.factions.keys - factions_among_selections
           available_factions.sample(draw - results.length).each do |faction|
             house_selection = Selection.create(draft: self, user: house, faction: faction)
-            results << Result.new(draft: self, selection: house_selection)
+            results << Result.create(draft: self, selection: house_selection)
           end
         end
         self.drawn = true
